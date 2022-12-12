@@ -55,7 +55,7 @@ app.get("/file",(req,res)=>{
 })
 
 app.get("/import",async (req, res) => {
-   dataloader.loadData().then((data)=>{
+   DataLoader.loadData().then((data)=>{
     FileSaver.saveFile(JSON.stringify(data))
     res.send("File saved " + JSON.stringify(data));
    });
@@ -64,7 +64,7 @@ app.get("/import",async (req, res) => {
 
 cron.schedule('* * 20 * * *', () => {
   console.log('running a task every minute');
-  dataloader.loadData().then((data)=>{
+  DataLoader.loadData().then((data)=>{
     FileSaver.saveFile(JSON.stringify(data))
     res.send("File saved " + JSON.stringify(data));
    });
