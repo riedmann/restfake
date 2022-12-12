@@ -1,15 +1,20 @@
 const express = require("express");
 const cron = require("node-cron");
-const dataloader = require("./app/dataloader");
-const saveFile = require("./app/saveFile")
+const DataLoader = require("./app/DataLoader");
+const FileSaver = require("./app/FileSaver")
+
+// getting local files
 const importedData = require("./import.json");
+const products = require("./items.json");
+
+// environment
 require("dotenv").config();
 
 const app = express();
 const port = process.env.PORT;
+const defaultLimit = process.env.LIMIT||20;
 
 app.use(express.json());
-
 
 const type = ["guitar", "piano", "electric"];
 
@@ -27,6 +32,23 @@ app.get("/", (req, res) => {
   res.send(data);
 });
 
+app.get("/products",(req,res)=>{
+  let page = req.query.page;
+  let limit = req.query.limit;
+  if (page==undefined){
+    res.send(products.value);
+  } else {
+    limit = (limit==undefined)?defaultLimit:limit;
+    
+    let lower = parseInt(page)*parseInt(limit);
+    console.log(lower);
+    let upper = parseInt(lower) + parseInt(limit);
+    console.log(upper);
+    res.send( products.value.slice(lower,upper));
+
+  }
+  
+})
 app.get("/file",(req,res)=>{
   console.log(importedData);
   res.send(importedData);
@@ -34,7 +56,7 @@ app.get("/file",(req,res)=>{
 
 app.get("/import",async (req, res) => {
    dataloader.loadData().then((data)=>{
-    saveFile.saveFile(JSON.stringify(data))
+    FileSaver.saveFile(JSON.stringify(data))
     res.send("File saved " + JSON.stringify(data));
    });
 
@@ -43,7 +65,7 @@ app.get("/import",async (req, res) => {
 cron.schedule('* * 20 * * *', () => {
   console.log('running a task every minute');
   dataloader.loadData().then((data)=>{
-    saveFile.saveFile(JSON.stringify(data))
+    FileSaver.saveFile(JSON.stringify(data))
     res.send("File saved " + JSON.stringify(data));
    });
 });
