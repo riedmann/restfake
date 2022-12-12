@@ -1,6 +1,9 @@
 const express = require('express');
+require('dotenv').config();
+
 const app = express();
-const port = process.env.PORT || 3000
+const port = process.env.PORT
+
 app.use(express.json());
 
 const type = ["guitar","piano","electric"]
@@ -15,5 +18,5 @@ app.get('/', (req, res) => {
 })
 
 app.listen(port, () => {
-    console.log(`Server Started at ${443}`)
+    console.log(`Server Started at ${port}`)
 })
