@@ -1,7 +1,7 @@
 const express = require("express");
 const cron = require("node-cron");
-const DataLoader = require("./app/DataLoader.js");
-const FileSaver = require("./app/FileSaver.js")
+const DataLoader = require("./DataLoader");
+const FileSaver = require("./FileSaver")
 
 // getting local files
 const importedData = require("./import.json");
