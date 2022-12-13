@@ -1,20 +1,42 @@
 const express = require("express");
 const cron = require("node-cron");
+const cors = require('cors');
+const helmet = require("helmet");
+const morgan = require("morgan"); // logger
+const rateLimit = require("express-rate-limit"); // limit requests
+
+// my own libraries
 const DataLoader = require("./DataLoader");
 const FileSaver = require("./FileSaver")
 
-// getting local files
+
+// files
 const importedData = require("./import.json");
 const products = require("./items.json");
 
 // environment
 require("dotenv").config();
 
+
+// set Limit
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
+});
+
+// registering middleware
 const app = express();
 const port = process.env.PORT;
 const defaultLimit = process.env.LIMIT||20;
 
 app.use(express.json());
+app.use(helmet());
+app.use(morgan());
+app.use(limiter);
+// app.use(cors({
+//     origin: ['https://www.section.io', 'https://www.google.com/']
+// }));
+
 
 const type = ["guitar", "piano", "electric"];
 
@@ -32,6 +54,8 @@ app.get("/", (req, res) => {
   res.send(data);
 });
 
+
+// products with page and limit
 app.get("/products",(req,res)=>{
   let page = req.query.page;
   let limit = req.query.limit;
@@ -49,6 +73,8 @@ app.get("/products",(req,res)=>{
   }
   
 })
+
+// return imported file
 app.get("/file",(req,res)=>{
   console.log(importedData);
   res.send(importedData);
