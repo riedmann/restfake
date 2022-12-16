@@ -33,9 +33,7 @@ app.use(express.json());
 app.use(helmet());
 app.use(morgan());
 app.use(limiter);
-// app.use(cors({
-//     origin: ['https://www.section.io', 'https://www.google.com/']
-// }));
+app.use(cors());
 
 
 const type = ["guitar", "piano", "electric"];
